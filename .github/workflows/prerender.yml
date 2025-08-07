@@ -3,41 +3,34 @@ name: Build and Deploy
 on:
   schedule:
     - cron: '*/10 * * * *'      # ogni 10 minuti
-  workflow_dispatch:            # avvio manuale dal tab Actions
+  workflow_dispatch:
   push:
-    branches: [ main ]          # rigenera a ogni commit su main
+    branches: [ main ]
 
 jobs:
   build:
-    # ⬇️  concede al token github-actions i permessi di scrittura
     permissions:
-      contents: write
-
+      contents: write           # permette il push su gh-pages
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣  Clona il repo
       - uses: actions/checkout@v3
 
-      # 2️⃣  Installa Node 18
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      # 3️⃣  Installa le dipendenze
       - name: Install deps
         run: npm install --omit=dev
 
-      # 4️⃣  Lancia lo script di prerender
       - name: Run prerender script
         run: npm run build
 
-      # 5️⃣  Pubblica la cartella dist/ sul branch gh-pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
-          keep_files: false      # elimina i vecchi file dal branch gh-pages
+          keep_files: false
 
