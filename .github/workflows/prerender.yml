@@ -1,3 +1,4 @@
+# .github/workflows/prerender.yml
 name: Build and Deploy
 
 on:
@@ -5,28 +6,35 @@ on:
     - cron: '*/10 * * * *'      # ogni 10 minuti
   workflow_dispatch:            # avvio manuale dal tab Actions
   push:
-    branches: [ main ]          # rigenera quando fai commit su main
+    branches: [ main ]          # rigenera a ogni commit su main
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
 
+    steps:
+      # 1️⃣  Clona il repo
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      # 2️⃣  Installa Node 18
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
+      # 3️⃣  Installa le dipendenze (usa npm install, NON npm ci)
       - name: Install deps
-        run: npm ci --omit=dev
+        run: npm install --omit=dev
 
+      # 4️⃣  Esegue lo script di prerender che genera dist/index.html
       - name: Run prerender script
         run: npm run build
 
+      # 5️⃣  Pubblica la cartella dist/ su GitHub Pages (branch gh-pages)
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
-          keep_files: false      # cancella i vecchi file
+          keep_files: false        # rimuove file vecchi dal branch gh-pages
