@@ -2307,8 +2307,8 @@ window.addEventListener('load', () => {
   }
 }</style>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 
 </head>
@@ -8368,36 +8368,6 @@ window.addEventListener('load', function(){
 })();
 </script>
 <!-- === /patch v2 === -->
-
-
-<!-- MarkerCluster patch injected by ChatGPT -->
-<script>
-(function(){
-  if (typeof L === 'undefined') return;
-  function initCluster(){
-    if(!window.map || typeof window.map.eachLayer!=='function') return;
-    const clusterGroup = L.markerClusterGroup();
-    let hasMarkers=false;
-    if(Array.isArray(window.markers)){
-        window.markers.forEach(m=>{clusterGroup.addLayer(m); hasMarkers=true;});
-    }
-    window.map.eachLayer(function(l){
-        if(l instanceof L.Marker){
-            clusterGroup.addLayer(l);
-            hasMarkers=true;
-        }
-    });
-    if(hasMarkers){
-        window.map.addLayer(clusterGroup);
-    }
-  }
-  if(document.readyState==='complete'){
-     initCluster();
-  }else{
-     window.addEventListener('load', initCluster);
-  }
-})();
-</script>
 
 </body>
 
