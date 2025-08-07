@@ -1,4 +1,3 @@
-# .github/workflows/prerender.yml
 name: Build and Deploy
 
 on:
@@ -10,12 +9,15 @@ on:
 
 jobs:
   build:
+    # ⬇️  concede al token github-actions i permessi di scrittura
+    permissions:
+      contents: write
+
     runs-on: ubuntu-latest
 
     steps:
       # 1️⃣  Clona il repo
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
       # 2️⃣  Installa Node 18
       - name: Setup Node
@@ -23,18 +25,19 @@ jobs:
         with:
           node-version: 18
 
-      # 3️⃣  Installa le dipendenze (usa npm install, NON npm ci)
+      # 3️⃣  Installa le dipendenze
       - name: Install deps
         run: npm install --omit=dev
 
-      # 4️⃣  Esegue lo script di prerender che genera dist/index.html
+      # 4️⃣  Lancia lo script di prerender
       - name: Run prerender script
         run: npm run build
 
-      # 5️⃣  Pubblica la cartella dist/ su GitHub Pages (branch gh-pages)
+      # 5️⃣  Pubblica la cartella dist/ sul branch gh-pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
-          keep_files: false        # rimuove file vecchi dal branch gh-pages
+          keep_files: false      # elimina i vecchi file dal branch gh-pages
+
