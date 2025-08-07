@@ -1,36 +1,32 @@
-name: Build and Deploy
+name: Build and Deploy (prerender)
 
 on:
+  workflow_dispatch: {}
   schedule:
-    - cron: '*/10 * * * *'      # ogni 10 minuti
-  workflow_dispatch:
-  push:
-    branches: [ main ]
+    - cron: "*/10 * * * *"
 
 jobs:
   build:
-    permissions:
-      contents: write           # permette il push su gh-pages
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
-      - name: Install deps
-        run: npm install --omit=dev
+      - name: Install tools
+        run: |
+          npm i puppeteer serve-static finalhandler
 
-      - name: Run prerender script
-        run: npm run build
+      - name: Run prerender
+        run: node prerender.js
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
-          keep_files: false
-
+          publish_branch: gh-pages
+          force_orphan: true
